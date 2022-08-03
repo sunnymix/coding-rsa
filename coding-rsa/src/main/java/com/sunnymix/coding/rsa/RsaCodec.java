@@ -29,15 +29,11 @@ public class RsaCodec {
 
     public static final String PRIVATE_KEY = "PRIVATE_KEY";
 
-    private static final int ENCODE_CHUNK_LEN = 117;
-
-    private static final int DECODE_CHUNK_LEN = 128;
-
     public static Map<String, String> initKey() {
         Map<String, String> keyMap = new HashMap<>(2);
         try {
             KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(RSA);
-            keyPairGen.initialize(1024);
+            keyPairGen.initialize(2048);
             KeyPair keyPair = keyPairGen.generateKeyPair();
             keyMap.put(PUBLIC_KEY, Base64.encodeBase64String(keyPair.getPublic().getEncoded()));
             keyMap.put(PRIVATE_KEY, Base64.encodeBase64String(keyPair.getPrivate().getEncoded()));
@@ -46,25 +42,17 @@ public class RsaCodec {
         return keyMap;
     }
 
-    public static byte[] encode(byte[] data, String key) throws Throwable {
-        Cipher cipher = _buildPublicCipher(key);
-        return _codecByChunk(data, cipher, ENCODE_CHUNK_LEN);
+    public static byte[] encrypt(byte[] data, String key) throws Throwable {
+        Cipher cipher = _buildCipher(Cipher.ENCRYPT_MODE, key);
+        return _codec(data, cipher);
     }
 
-    public static byte[] decode(byte[] data, String key) throws Throwable {
-        Cipher cipher = _buildPrivateCipher(key);
-        return _codecByChunk(data, cipher, DECODE_CHUNK_LEN);
+    public static byte[] decrypt(byte[] data, String key) throws Throwable {
+        Cipher cipher = _buildCipher(Cipher.DECRYPT_MODE, key);
+        return _codec(data, cipher);
     }
 
     // --- Private:
-
-    private static Cipher _buildPublicCipher(String key) throws Throwable {
-        return _buildCipher(Cipher.ENCRYPT_MODE, key);
-    }
-
-    private static Cipher _buildPrivateCipher(String key) throws Throwable {
-        return _buildCipher(Cipher.DECRYPT_MODE, key);
-    }
 
     private static Cipher _buildCipher(int mode, String key) throws Throwable {
         byte[] keyBytes = Base64.decodeBase64(key.getBytes());
@@ -86,9 +74,13 @@ public class RsaCodec {
         throw new RuntimeException("unknown cipher mode:" + mode);
     }
 
-    private static byte[] _codecByChunk(byte[] data, Cipher cipher, int chunkLen) throws Throwable {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private static byte[] _codec(byte[] data, Cipher cipher) throws Throwable {
+        return cipher.doFinal(data);
+    }
 
+    @Deprecated
+    private static byte[] _codec(byte[] data, Cipher cipher, int chunkLen) throws Throwable {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         int dataLen = data.length;
         int chunkPage = _calcChunkPage(dataLen, chunkLen);
 
