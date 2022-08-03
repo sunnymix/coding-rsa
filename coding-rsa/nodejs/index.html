@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+  <head>
+    <title>JavaScript RSA Encryption</title>
+    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+    <script src="jsencrypt.min.js"></script>
+    <script type="text/javascript">
+
+      // Call this code when the page is done loading.
+      $(function() {
+
+        // Run a quick encryption/decryption when they click.
+        $('#testme').click(function() {
+
+          // Encrypt with the public key...
+          var encrypt = new JSEncrypt();
+          encrypt.setPublicKey($('#pubkey').val());
+          var encrypted = encrypt.encrypt($('#input').val());
+
+          // Decrypt with the private key...
+          var decrypt = new JSEncrypt();
+          decrypt.setPrivateKey($('#privkey').val());
+          var uncrypted = decrypt.decrypt(encrypted);
+          $('#output').val(uncrypted);
+        });
+
+        $('#testme_base64').click(function() {
+
+          // 加密：
+          var encrypt = new JSEncrypt();
+          var publicKeyEncoded = $('#pubkey_base64').val();
+          
+          
+          encrypt.setPublicKey(publicKeyEncoded);
+          var encrypted = encrypt.encrypt($('#input_base64').val());
+          console.log(encrypted);
+
+          // 解密：
+          var decrypt = new JSEncrypt();
+          var privateKeyEncoded = $('#privkey_base64').val();
+          
+          var privateKeyDecoded = window.atob(privateKeyEncoded);
+          decrypt.setPrivateKey(privateKeyEncoded);
+          
+          var uncrypted = decrypt.decrypt(encrypted);
+          $('#output_base64').val(uncrypted);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <label for="pubkey">Public Key</label><br/>
+    <textarea id="pubkey" rows="6" cols="65">-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDlOJu6TyygqxfWT7eLtGDwajtN
+FOb9I5XRb6khyfD1Yt3YiCgQWMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76
+xFxdU6jE0NQ+Z+zEdhUTooNRaY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4
+gwQco1KRMDSmXSMkDwIDAQAB
+-----END PUBLIC KEY-----</textarea><br/>
+    <label for="privkey">Private Key</label><br/>
+    <textarea id="privkey" rows="15" cols="65">-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQDlOJu6TyygqxfWT7eLtGDwajtNFOb9I5XRb6khyfD1Yt3YiCgQ
+WMNW649887VGJiGr/L5i2osbl8C9+WJTeucF+S76xFxdU6jE0NQ+Z+zEdhUTooNR
+aY5nZiu5PgDB0ED/ZKBUSLKL7eibMxZtMlUDHjm4gwQco1KRMDSmXSMkDwIDAQAB
+AoGAfY9LpnuWK5Bs50UVep5c93SJdUi82u7yMx4iHFMc/Z2hfenfYEzu+57fI4fv
+xTQ//5DbzRR/XKb8ulNv6+CHyPF31xk7YOBfkGI8qjLoq06V+FyBfDSwL8KbLyeH
+m7KUZnLNQbk8yGLzB3iYKkRHlmUanQGaNMIJziWOkN+N9dECQQD0ONYRNZeuM8zd
+8XJTSdcIX4a3gy3GGCJxOzv16XHxD03GW6UNLmfPwenKu+cdrQeaqEixrCejXdAF
+z/7+BSMpAkEA8EaSOeP5Xr3ZrbiKzi6TGMwHMvC7HdJxaBJbVRfApFrE0/mPwmP5
+rN7QwjrMY+0+AbXcm8mRQyQ1+IGEembsdwJBAN6az8Rv7QnD/YBvi52POIlRSSIM
+V7SwWvSK4WSMnGb1ZBbhgdg57DXaspcwHsFV7hByQ5BvMtIduHcT14ECfcECQATe
+aTgjFnqE/lQ22Rk0eGaYO80cc643BXVGafNfd9fcvwBMnk0iGX0XRsOozVt5Azil
+psLBYuApa66NcVHJpCECQQDTjI2AQhFc1yRnCU/YgDnSpJVm1nASoRUnU8Jfm3Oz
+uku7JUXcVpt08DFSceCEX9unCuMcT72rAQlLpdZir876
+-----END RSA PRIVATE KEY-----</textarea><br/>
+    <label for="input">Text encrypt:</label><br/>
+    <textarea id="input" name="input" type="text" rows=2 cols=70>sunny</textarea><br/>
+    <label for="output">Text decrypt:</label><br/>
+    <textarea id="output" name="output" type="text" rows=2 cols=70></textarea><br/>
+    <input id="testme" type="button" value="Test Me!!!" /><br/>
+    <br/>
+    <hr/>
+    <br/>
+    base64:
+    <label for="pubkey_base64">Public Key</label><br/>
+    <textarea id="pubkey_base64" rows="4" cols="65">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDs+SfHVT2dWL6sbUOg7zFh/nbtltf2UPvh2W2EJdGGawbv0Z8ekcd/aSA40VlK8apf0/gaywpphCJXbbpwzOTYUDoeYewaSpzhTEuIbGcZzoiSi9vjhV7PoZueu45X0kOZ7skxUDbriIRPzuUG1ahwuneGPdVOSUIrEixyxIAfwQIDAQAB</textarea><br/>
+    <label for="privkey_base64">Private Key</label><br/>
+    <textarea id="privkey_base64" rows="13" cols="65">MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAOz5J8dVPZ1YvqxtQ6DvMWH+du2W1/ZQ++HZbYQl0YZrBu/Rnx6Rx39pIDjRWUrxql/T+BrLCmmEIldtunDM5NhQOh5h7BpKnOFMS4hsZxnOiJKL2+OFXs+hm567jlfSQ5nuyTFQNuuIhE/O5QbVqHC6d4Y91U5JQisSLHLEgB/BAgMBAAECgYADtbrbsgfu6K7DgEpowJXjVNqDybLD1my7Em5WfUkUc6R+KKf3EI0w/3JTsWNWewYRzf26XadiE4F+IOekUHDcsl448FVd2D6ch1ea62SnpEYSKD2IOQ91bW32i2U5xQXdvms8UY6HcsCeNkEvsjfC/JiB6WJtp3INq0crAlebiQJBAPrwqtS7lMiieJ/uvVMJxkMLL8CDLvI+4/nRTFAKrI7I2x5rkjvZPDxFRHHlwiZSAoH4dIl2pm93tDdx/AvKpScCQQDxwGRxKvzfLp0VH9jSm/IA1RtbJLDvBlk4KSSrcmlUiYZaWfG4VXMYVMLJb4+v+M/ww08clMpQocPfAsAzULTXAkEA8AIjwhgvc75BlOYo2jUtFY6re3t8+WFBdvzB+oRbCq39NZk5YliiDhtKHY3dJf2mPF1ASQHcqhxZl/ZDVZvaXQJBAJuNWNO8flM40hg6krAJabEBboW52SMjqZrKVm7+wimEB+/w+ejLCrC4MVGduA3Zgir/8NKKJpe1TqwbQAKExqcCQQCq6PqG3UssJnpF56sFzPETJ7Sre7uKaeVYN/R8YQrvOjW7OdX/VWGhaxKvCJvySaDNh3VEP4UrF5EpnMW00BGc</textarea><br/>
+    <label for="input_base64">Text encrypt:</label><br/>
+    <textarea id="input_base64" name="input" type="text" rows=2 cols=70>sunny</textarea><br/>
+    <label for="output_base64">Text decrypt:</label><br/>
+    <textarea id="output_base64" name="output" type="text" rows=2 cols=70></textarea><br/>
+    <input id="testme_base64" type="button" value="Test Me!!!" /><br/>
+  </body>
+</html>
